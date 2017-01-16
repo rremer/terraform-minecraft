@@ -110,7 +110,7 @@ variable "minecraft_data_symlink" {
 
 variable "minecraft_download_url" {
   type    = "string"
-  default = "http://ftb.cursecdn.com/FTB2/modpacks/FTBInfinityLite110/1_4_1/FTBInfinityLite110Server.zip"
+  default = "http://ftb.cursecdn.com/FTB2/modpacks/FTBInfinityLite110/1_5_1/FTBInfinityLite110Server.zip"
 }
 
 variable "minecraft_property_file" {

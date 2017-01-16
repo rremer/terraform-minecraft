@@ -12,6 +12,7 @@ yes | aptdcon --hide-terminal --install openjdk-8-jre-headless
 yes | aptdcon --hide-terminal --install unzip
 
 # add a service user
+rm -r "${module_install_dir}"
 mkdir -p "${module_install_dir}"
 adduser --system --no-create-home --home "${module_install_dir}" "${module_name}" || true
 addgroup --system "${module_name}" || true
