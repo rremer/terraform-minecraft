@@ -8,18 +8,8 @@ resource "aws_instance" "vpc_ec2" {
 
   root_block_device {
     volume_type           = "standard"
-    volume_size           = 10
+    volume_size           = 60
     delete_on_termination = true
-  }
-
-  ephemeral_block_device {
-    device_name  = "/dev/xvdb"
-    virtual_name = "ephemeral0"
-  }
-
-  ephemeral_block_device {
-    device_name  = "/dev/xvdc"
-    virtual_name = "ephemeral1"
   }
 
   tags {
@@ -45,13 +35,18 @@ resource "aws_instance" "vpc_ec2" {
   }
 }
 
+/* some launches are getting their ephemeral volumes, others aren't
+   ... disable for now. This module correctly fails when the devices
+   it expects are not accessible, but to use current gen hardware
+   we are sacrificing the ephemerals.
 module "lvm" {
   source                 = "./lvm"
   connection_host        = "${aws_instance.vpc_ec2.public_ip}"
   connection_user        = "${var.connection_user}"
   connection_private_key = "${var.ssh_private_key}"
-  devices                = ["/dev/xvdb","/dev/xvdc"]
+  devices                = ["/dev/xvdb", "/dev/xvdc"]
 }
+*/
 
 module "ntp" {
   source                 = "./ntp"
@@ -61,13 +56,14 @@ module "ntp" {
 }
 
 module "minecraft" {
-  source                            = "./minecraft"
-  connection_host                   = "${aws_instance.vpc_ec2.public_ip}"
-  connection_user                   = "${var.connection_user}"
-  connection_private_key            = "${var.ssh_private_key}"
-  minecraft_port                   = "${var.application_port}"
-  minecraft_backup_enabled          = "false"
-  minecraft_data_symlink            = "${module.lvm.volume_mount_point}"
+  source                   = "./minecraft"
+  connection_host          = "${aws_instance.vpc_ec2.public_ip}"
+  connection_user          = "${var.connection_user}"
+  connection_private_key   = "${var.ssh_private_key}"
+  minecraft_port           = "${var.application_port}"
+  minecraft_backup_enabled = "false"
+  minecraft_data_symlink   = "/world"
+  #minecraft_data_symlink   = "${module.lvm.volume_mount_point}"
 }
 
 module "backup" {
@@ -75,7 +71,10 @@ module "backup" {
   connection_host        = "${aws_instance.vpc_ec2.public_ip}"
   connection_user        = "${var.connection_user}"
   connection_private_key = "${var.ssh_private_key}"
+  keep_days              = "-1"
+  backup_rate_limit_kbs  = "10000"
 
-  backup_endpoint        = "${var.application_name}.${var.domain_name}"
-  backup_directory       = "${module.lvm.volume_mount_point}"
+  backup_endpoint  = "${var.application_name}.${var.domain_name}"
+  backup_directory = "/world"
+  #backup_directory = "${module.lvm.volume_mount_point}"
 }

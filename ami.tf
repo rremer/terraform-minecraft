@@ -23,12 +23,6 @@ data "aws_ami" "ubuntu_lts" {
     values = ["x86_64"]
   }
 
-  # paravirtual lets us use a last-gen m1.Large, which is a good fit
-  filter {
-    name   = "virtualization-type"
-    values = ["paravirtual"]
-  }
-
   filter {
     name   = "root-device-type"
     values = ["ebs"]

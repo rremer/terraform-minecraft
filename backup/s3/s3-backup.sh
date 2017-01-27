@@ -21,7 +21,7 @@ backup="${BACKUP_TMP_DIR}/${date_now}${backup_ext}"
 del_seconds=$(expr ${date_now} - ${keep_seconds})
 
 # reusable s3cmd invocation
-s3cmd_cmd="s3cmd --config=${CFG_PATH} --no-progress"
+s3cmd_cmd="$(which s3cmd) --config=${CFG_PATH} --no-progress"
 
 trap cleanup EXIT
 cleanup(){
@@ -31,7 +31,7 @@ cleanup(){
 test -d "${DIRECTORY}"
 mkdir -p "${BACKUP_TMP_DIR}"
 tar -czf "${backup}" "${DIRECTORY}"
-trickle -u ${LIMIT_KBS} "${s3cmd_cmd} put ${backup} ${S3_BUCKET}"
+trickle -s -u ${LIMIT_KBS} ${s3cmd_cmd} put ${backup} ${S3_BUCKET}
 
 # if we keep backups forever, exit here
 if [ ${keep_seconds} -lt 0 ]; then exit 0; fi
