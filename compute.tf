@@ -1,80 +1,52 @@
-resource "aws_instance" "vpc_ec2" {
-  ami                         = "${data.aws_ami.ubuntu_lts.image_id}"
-  key_name                    = "${aws_key_pair.terraform.key_name}"
-  subnet_id                   = "${module.vpc.public_subnets[0]}"
-  instance_type               = "${var.aws_ec2_instance_type}"
-  associate_public_ip_address = "true"
-  vpc_security_group_ids      = ["${aws_security_group.ssh.id}", "${aws_security_group.internet.id}", "${aws_security_group.application.id}"]
+data "google_compute_image" "base" {
+  family  = "${var.compute_image_family}"
+  project = "${var.compute_image_project}"
+}
 
-  root_block_device {
-    volume_type           = "standard"
-    volume_size           = 60
-    delete_on_termination = true
+data "google_compute_zones" "available" {
+  region = "${var.compute_region}"
+}
+
+resource "google_compute_instance" "minecraft" {
+  depends_on   = ["null_resource.ssh_public_key"]
+  name         = "${var.global_app_name}"
+  machine_type = "${var.compute_instance_size}"
+  zone         = "${data.google_compute_zones.available.names.0}"
+  tags         = ["${var.global_app_name}"]
+
+  boot_disk {
+    initialize_params {
+      image = "${data.google_compute_image.base.self_link}"
+    }
   }
 
-  tags {
-    Name = "${var.application_name}"
+  network_interface {
+    network = "default"
+
+    access_config {
+      # Ephemeral
+    }
   }
 
-  connection {
-    user        = "${var.connection_user}"
-    private_key = "${var.ssh_private_key}"
+  metadata {
+    ssh-keys = "${var.compute_image_name}:${file("${var.connection_public_credentials_path}")}"
   }
 
-  provisioner "remote-exec" {
-    /*
-      - some amis boot with an unresolveable hostname, annoying fix
-      - update the apt cache and install aptdaemon: paralellel apt
-        installations by terraform modules
-    */
-    inline = [
-      "sudo sed -i '/^127.0.0.1/ s/$/ '$(hostname)'/' /etc/hosts",
-      "sudo apt-get update -qq",
-      "sudo apt-get install -qy aptdaemon",
-    ]
+  service_account {
+    scopes = ["https://www.googleapis.com/auth/compute.readonly"]
   }
 }
 
-/* some launches are getting their ephemeral volumes, others aren't
-   ... disable for now. This module correctly fails when the devices
-   it expects are not accessible, but to use current gen hardware
-   we are sacrificing the ephemerals.
-module "lvm" {
-  source                 = "./lvm"
-  connection_host        = "${aws_instance.vpc_ec2.public_ip}"
-  connection_user        = "${var.connection_user}"
-  connection_private_key = "${var.ssh_private_key}"
-  devices                = ["/dev/xvdb", "/dev/xvdc"]
-}
-*/
-
-module "ntp" {
-  source                 = "./ntp"
-  connection_host        = "${aws_instance.vpc_ec2.public_ip}"
-  connection_user        = "${var.connection_user}"
-  connection_private_key = "${var.ssh_private_key}"
+module "aptdaemon" {
+  source                 = "./aptdaemon"
+  connection_host        = "${google_compute_instance.minecraft.network_interface.0.access_config.0.assigned_nat_ip}"
+  connection_user        = "${var.compute_image_name}"
+  connection_private_key = "${file("${var.connection_credentials_path}")}"
 }
 
 module "minecraft" {
-  source                   = "./minecraft"
-  connection_host          = "${aws_instance.vpc_ec2.public_ip}"
-  connection_user          = "${var.connection_user}"
-  connection_private_key   = "${var.ssh_private_key}"
-  minecraft_port           = "${var.application_port}"
-  minecraft_backup_enabled = "false"
-  minecraft_data_symlink   = "/world"
-  #minecraft_data_symlink   = "${module.lvm.volume_mount_point}"
-}
-
-module "backup" {
-  source                 = "./backup/s3"
-  connection_host        = "${aws_instance.vpc_ec2.public_ip}"
-  connection_user        = "${var.connection_user}"
-  connection_private_key = "${var.ssh_private_key}"
-  keep_days              = "-1"
-  backup_rate_limit_kbs  = "10000"
-
-  backup_endpoint  = "${var.application_name}.${var.domain_name}"
-  backup_directory = "/world"
-  #backup_directory = "${module.lvm.volume_mount_point}"
+  source                 = "./minecraft"
+  connection_host        = "${google_compute_instance.minecraft.network_interface.0.access_config.0.assigned_nat_ip}"
+  connection_user        = "${var.compute_image_name}"
+  connection_private_key = "${file("${var.connection_credentials_path}")}"
 }

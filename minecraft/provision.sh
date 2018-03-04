@@ -20,7 +20,8 @@ cd "$(dirname ${0})"
 test -f "${1}"
 source "${1}"
 
-scripts=(install-minecraft.sh \
+scripts=(block-until-dependents.sh \
+install-minecraft.sh \
 generate-config-json.sh
 generate-server-properties.sh)
 

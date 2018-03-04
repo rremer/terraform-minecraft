@@ -1,18 +1,18 @@
 resource "null_resource" "provisioner" {
   triggers {
-    var_user                           = "${var.connection_user}"
-    var_host                           = "${var.connection_host}"
-    var_private_key                    = "${sha1("${var.connection_private_key}")}"
-    var_port                           = "${var.connection_port}"
-    var_minecraft_download_url         = "${var.minecraft_download_url}"
-    var_module_name                    = "${var.module_name}"
-    var_module_install_basedir         = "${var.module_install_basedir}"
-    var_minecraft_data_subdir          = "${var.minecraft_data_subdir}"
-    var_minecraft_data_symlink         = "${var.minecraft_data_symlink}"
-    var_minecraft_backup_enabled       = "${var.minecraft_backup_enabled}"
-    var_minecraft_port                 = "${var.minecraft_port}"
-    var_remote_resource_dir            = "${var.remote_resource_dir}"
-    var_dpkg_timeout_s                 = "${var.dpkg_timeout_s}"
+    var_user                     = "${var.connection_user}"
+    var_host                     = "${var.connection_host}"
+    var_private_key              = "${sha1("${var.connection_private_key}")}"
+    var_port                     = "${var.connection_port}"
+    var_minecraft_download_url   = "${var.minecraft_download_url}"
+    var_module_name              = "${var.module_name}"
+    var_module_install_basedir   = "${var.module_install_basedir}"
+    var_minecraft_data_subdir    = "${var.minecraft_data_subdir}"
+    var_minecraft_data_symlink   = "${var.minecraft_data_symlink}"
+    var_minecraft_backup_enabled = "${var.minecraft_backup_enabled}"
+    var_minecraft_port           = "${var.minecraft_port}"
+    var_remote_resource_dir      = "${var.remote_resource_dir}"
+    var_dpkg_timeout_s           = "${var.dpkg_timeout_s}"
 
     file_main_tf                       = "${sha1("${file("${path.module}/main.tf")}")}"
     file_variables_tf                  = "${sha1("${file("${path.module}/variables.tf")}")}"
@@ -37,7 +37,7 @@ resource "null_resource" "provisioner" {
   }
 
   provisioner "file" {
-    content = "
+    content = <<PROPERTIES
 # generated on deployment from ${path.module}
 module_name='${var.module_name}'
 module_install_basedir='${var.module_install_basedir}'
@@ -60,7 +60,7 @@ minecraft_property_motd='${var.minecraft_property_motd}'
 minecraft_data_subdir='${var.minecraft_data_subdir}'
 minecraft_data_symlink='${var.minecraft_data_symlink}'
 dpkg_timeout_s='${var.dpkg_timeout_s}'
-"
+PROPERTIES
 
     destination = "${var.remote_resource_dir}/${var.module_name}/${var.module_properties}"
   }

@@ -33,7 +33,6 @@ variable "connection_host" {
 }
 
 variable "connection_private_key" {
-  sensitive   = true
   type        = "string"
   description = "SSH RSA private key material. Not a path to a file."
 }
