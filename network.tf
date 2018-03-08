@@ -24,6 +24,6 @@ resource "google_compute_firewall" "ssh" {
     ports    = ["22"]
   }
 
-  source_ranges = ["${data.http.public_ipv4.body}"]
+  source_ranges = ["${trimspace(data.http.public_ipv4.body)}"]
   target_tags   = ["${var.global_app_name}"]
 }

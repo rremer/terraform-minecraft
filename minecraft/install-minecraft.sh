@@ -14,9 +14,11 @@ yes | aptdcon --hide-terminal --install unzip
 # add a service user
 rm -r "${module_install_dir}" || true
 mkdir -p "${module_install_dir}"
+mkdir -p "${minecraft_backup_data_dir}"
 adduser --system --no-create-home --home "${module_install_dir}" "${module_name}" || true
 addgroup --system "${module_name}" || true
 chown -R "${module_name}" "${module_install_dir}"
+chown -R "${module_name}" "${minecraft_backup_data_dir}"
 
 # create the service unit
 cat << SVC-UNIT > "/etc/systemd/system/${module_name}.service"

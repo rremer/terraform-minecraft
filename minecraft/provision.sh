@@ -22,8 +22,7 @@ source "${1}"
 
 scripts=(block-until-dependents.sh \
 install-minecraft.sh \
-generate-config-json.sh
-generate-server-properties.sh)
+generate-properties.sh)
 
 # iterate through all the scripts
 for script in ${scripts[@]}; do

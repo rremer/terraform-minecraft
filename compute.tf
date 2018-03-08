@@ -20,6 +20,10 @@ resource "google_compute_instance" "minecraft" {
     }
   }
 
+  attached_disk {
+    source = "${google_compute_disk.persistent.self_link}"
+  }
+
   network_interface {
     network = "default"
 
