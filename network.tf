@@ -1,46 +1,29 @@
-module "vpc" {
-  source             = "github.com/terraform-community-modules/tf_aws_vpc?ref=e3637e4db5b28e8396a94f6319b32ad99bb03d8e"
-  name               = "${var.application_name}"
-  cidr               = "10.0.0.0/16"
-  private_subnets    = ["10.0.1.0/24"]
-  public_subnets     = ["10.0.100.0/24"]
-  azs                = ["us-west-2a", "us-west-2b", "us-west-2c"]
-  enable_nat_gateway = "true"
-  enable_dns_support = "true"
+data "http" "public_ipv4" {
+  url = "${var.connection_public_ipv4_api_url}"
 }
 
-resource "aws_security_group" "ssh" {
-  vpc_id = "${module.vpc.vpc_id}"
-  name   = "ssh"
+resource "google_compute_firewall" "app" {
+  name    = "${var.global_app_name}-app"
+  network = "default"
 
-  ingress {
-    protocol    = "tcp"
-    from_port   = 22
-    to_port     = 22
-    cidr_blocks = ["0.0.0.0/0"]
+  allow {
+    protocol = "tcp"
+    ports    = ["${module.minecraft.game_port}"]
   }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["${var.global_app_name}"]
 }
 
-resource "aws_security_group" "internet" {
-  vpc_id = "${module.vpc.vpc_id}"
-  name   = "internet"
+resource "google_compute_firewall" "ssh" {
+  name    = "${var.global_app_name}-ssh"
+  network = "default"
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
   }
-}
 
-resource "aws_security_group" "application" {
-  vpc_id = "${module.vpc.vpc_id}"
-  name   = "${var.application_name}"
-
-  ingress {
-    protocol    = "tcp"
-    from_port   = "${var.application_port}"
-    to_port     = "${var.application_port}"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  source_ranges = ["${trimspace(data.http.public_ipv4.body)}"]
+  target_tags   = ["${var.global_app_name}"]
 }
