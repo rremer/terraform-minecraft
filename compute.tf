@@ -54,3 +54,13 @@ module "minecraft" {
   connection_user        = "${var.compute_image_name}"
   connection_private_key = "${file("${var.connection_credentials_path}")}"
 }
+
+module "nginx" {
+  source                              = "./nginx"
+  connection_host                     = "${google_compute_instance.minecraft.network_interface.0.access_config.0.assigned_nat_ip}"
+  connection_user                     = "${var.compute_image_name}"
+  connection_private_key              = "${file("${var.connection_credentials_path}")}"
+  nginx_config_https_key_pem          = "${file("${var.ssl_private_key_path}")}"
+  nginx_config_https_certificate_pem  = "${file("${var.ssl_certificate_path}")}"
+  nginx_config_https_intermediary_pem = "${file("${var.ssl_intermediary_path}")}"
+}
