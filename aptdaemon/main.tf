@@ -15,7 +15,7 @@ resource "null_resource" "provisioner" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo apt-get update -qq}",
+      "sudo apt-get update -qq",
       "sudo apt-get install -y aptdaemon",
     ]
   }
