@@ -21,6 +21,7 @@ test -f "${1}"
 source "${1}"
 
 scripts=(block-until-dependents.sh \
+install-java.sh \
 install-minecraft.sh \
 generate-properties.sh)
 

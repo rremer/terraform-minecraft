@@ -17,11 +17,9 @@ resource "google_compute_instance" "minecraft" {
   boot_disk {
     initialize_params {
       image = "${data.google_compute_image.base.self_link}"
+      size  = "${floor(var.compute_disk_size_gb)}"
+      type  = "${var.compute_disk_type}"
     }
-  }
-
-  attached_disk {
-    source = "${google_compute_disk.persistent.self_link}"
   }
 
   network_interface {
@@ -41,16 +39,24 @@ resource "google_compute_instance" "minecraft" {
   }
 }
 
-module "aptdaemon" {
-  source                 = "./aptdaemon"
-  connection_host        = "${google_compute_instance.minecraft.network_interface.0.access_config.0.assigned_nat_ip}"
+locals {
+  connection_host        = "${google_compute_instance.minecraft.network_interface.0.access_config.0.nat_ip}"
   connection_user        = "${var.compute_image_name}"
   connection_private_key = "${file("${var.connection_credentials_path}")}"
 }
 
+module "aptdaemon" {
+  source                 = "./aptdaemon"
+  connection_host        = "${local.connection_host}"
+  connection_user        = "${local.connection_user}"
+  connection_private_key = "${local.connection_private_key}"
+}
+
 module "minecraft" {
-  source                 = "./minecraft"
-  connection_host        = "${google_compute_instance.minecraft.network_interface.0.access_config.0.assigned_nat_ip}"
-  connection_user        = "${var.compute_image_name}"
-  connection_private_key = "${file("${var.connection_credentials_path}")}"
+  source                        = "./minecraft"
+  connection_host               = "${local.connection_host}"
+  connection_user               = "${local.connection_user}"
+  connection_private_key        = "${local.connection_private_key}"
+  minecraft_property_level_type = "BIOMESOP"
+  minecraft_download_url        = "http://storage.googleapis.com/minecraft-robsremix/1.0.0/RobsRemix-1.0.0-SNAPSHOT-server.zip"
 }

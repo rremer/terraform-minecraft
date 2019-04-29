@@ -24,10 +24,3 @@ cp "${minecraft_property_file_template}" "${minecraft_property_file_target_path}
 replace_props "${minecraft_property_file_target_path}"
 chown ${module_name} "${minecraft_property_file_target_path}"
 chmod 0444 "${minecraft_property_file_target_path}"
-
-
-mkdir -p "$(dirname ${minecraft_ftb_config_target_path})"
-cp "${minecraft_ftb_config_template}" "${minecraft_ftb_config_target_path}"
-replace_props "${minecraft_ftb_config_target_path}"
-chown ${module_name} "${minecraft_ftb_config_target_path}"
-chmod 0444 "${minecraft_ftb_config_target_path}"

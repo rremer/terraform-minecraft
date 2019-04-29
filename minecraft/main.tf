@@ -11,10 +11,10 @@ resource "null_resource" "provisioner" {
     minecraft_backup_enabled = "${var.minecraft_backup_enabled}"
     minecraft_port           = "${var.minecraft_property_port}"
 
-    main_tf                       = "${sha1("${file("${path.module}/main.tf")}")}"
-    variables_tf                  = "${sha1("${file("${path.module}/minecraft-variables.tf")}")}"
-    provision_sh                  = "${sha1("${file("${path.module}/provision.sh")}")}"
-    install_minecraft_sh          = "${sha1("${file("${path.module}/install-minecraft.sh")}")}"
+    main_tf                = "${sha1("${file("${path.module}/main.tf")}")}"
+    variables_tf           = "${sha1("${file("${path.module}/minecraft-variables.tf")}")}"
+    provision_sh           = "${sha1("${file("${path.module}/provision.sh")}")}"
+    install_minecraft_sh   = "${sha1("${file("${path.module}/install-minecraft.sh")}")}"
     generate_properties_sh = "${sha1("${file("${path.module}/generate-properties.sh")}")}"
   }
 
@@ -44,21 +44,14 @@ module_install_log='${var.module_install_log}'
 module_dpkg_timeout_s='${var.module_dpkg_timeout_s}'
 
 minecraft_download_url='${var.minecraft_download_url}'
-
-# ftb config properties
-minecraft_ftb_config_template='${var.minecraft_ftb_config_template}'
-minecraft_ftb_config_target='${var.minecraft_ftb_config_target}'
-minecraft_ftb_config_target_path='${var.module_install_basedir}/${var.module_name}/${var.minecraft_ftb_config_target}'
-minecraft_settings_script='${var.minecraft_settings_script}'
 minecraft_install_script='${var.minecraft_install_script}'
 
 minecraft_data_subdir='${var.minecraft_data_subdir}'
 minecraft_data_symlink='${var.minecraft_data_symlink}'
 
-minecraft_min_ram='${var.minecraft_min_ram}'
-minecraft_max_ram='${var.minecraft_max_ram}'
 minecraft_eula='${var.minecraft_eula}'
 minecraft_start_script='${var.minecraft_start_script}'
+minecraft_start_properties='${var.minecraft_start_properties}'
 
 # backup properties
 minecraft_backup_enabled='${var.minecraft_backup_enabled}'
@@ -67,6 +60,12 @@ minecraft_backup_keep_int='${var.minecraft_backup_keep_int}'
 minecraft_backup_compression='${var.minecraft_backup_compression}'
 minecraft_backup_silent='${var.minecraft_backup_silent}'
 minecraft_backup_data_dir='${var.minecraft_backup_data_dir}'
+
+# java properties
+java_install_directory='${var.java_install_directory}'
+java_download_url='${var.java_download_url}'
+java_min_ram='${var.java_min_ram}'
+java_max_ram='${var.java_max_ram}'
 
 # vanilla server properties
 minecraft_property_file_template='${var.minecraft_property_file_template}'

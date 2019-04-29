@@ -4,6 +4,18 @@ variable "compute_instance_size" {
   description = "The compute server size/flavor."
 }
 
+variable "compute_disk_size_gb" {
+  type        = "string"
+  default     = "200"
+  description = "The size in Gigabytes for the root volume."
+}
+
+variable "compute_disk_type" {
+  type        = "string"
+  default     = "pd-standard"
+  description = "The type/storage class of the root volume."
+}
+
 variable "compute_image_name" {
   type        = "string"
   default     = "ubuntu"
@@ -12,7 +24,7 @@ variable "compute_image_name" {
 
 variable "compute_image_family" {
   type        = "string"
-  default     = "ubuntu-1604-lts"
+  default     = "ubuntu-1804-lts"
   description = "The search token for a bootable image."
 }
 

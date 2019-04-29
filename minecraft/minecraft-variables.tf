@@ -4,39 +4,19 @@ variable "minecraft_download_url" {
   description = "URL to download minecrafot server modpack."
 }
 
-variable "minecraft_min_ram" {
-  type    = "string"
-  default = "8g"
-}
-
-variable "minecraft_max_ram" {
-  type    = "string"
-  default = "8g"
-}
-
 variable "minecraft_install_script" {
   type    = "string"
   default = "FTBInstall.sh"
 }
 
-variable "minecraft_ftb_config_template" {
-  type    = "string"
-  default = "config/config.cfg.tmpl"
-}
-
-variable "minecraft_ftb_config_target" {
-  type    = "string"
-  default = "local/ftbutilities/config.cfg"
-}
-
 variable "minecraft_start_script" {
   type    = "string"
-  default = "ServerStart.sh"
+  default = "server_start.sh"
 }
 
-variable "minecraft_settings_script" {
+variable "minecraft_start_properties" {
   type    = "string"
-  default = "settings.sh"
+  default = "server_start.properties"
 }
 
 variable "minecraft_eula" {
