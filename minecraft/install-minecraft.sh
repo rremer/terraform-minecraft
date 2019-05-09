@@ -6,10 +6,6 @@
 set -e
 set -u
 
-# deps
-yes | aptdcon --hide-terminal --install curl
-yes | aptdcon --hide-terminal --install unzip
-
 # add a service user
 rm -r "${module_install_dir}" || true
 mkdir -p "${module_install_dir}"

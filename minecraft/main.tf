@@ -1,15 +1,12 @@
 resource "null_resource" "provisioner" {
   triggers {
-    connection_user          = "${var.connection_user}"
-    connection_host          = "${var.connection_host}"
-    connection_private_key   = "${sha1("${var.connection_private_key}")}"
-    connection_port          = "${var.connection_port}"
-    minecraft_download_url   = "${var.minecraft_download_url}"
-    module_install_basedir   = "${var.module_install_basedir}"
-    minecraft_data_subdir    = "${var.minecraft_data_subdir}"
-    minecraft_data_symlink   = "${var.minecraft_data_symlink}"
-    minecraft_backup_enabled = "${var.minecraft_backup_enabled}"
-    minecraft_port           = "${var.minecraft_property_port}"
+    connection_user        = "${var.connection_user}"
+    connection_host        = "${var.connection_host}"
+    connection_private_key = "${sha1("${var.connection_private_key}")}"
+    connection_port        = "${var.connection_port}"
+    minecraft_download_url = "${var.minecraft_download_url}"
+    module_install_basedir = "${var.module_install_basedir}"
+    minecraft_port         = "${var.minecraft_property_port}"
 
     main_tf                = "${sha1("${file("${path.module}/main.tf")}")}"
     variables_tf           = "${sha1("${file("${path.module}/minecraft-variables.tf")}")}"
@@ -44,22 +41,10 @@ module_install_log='${var.module_install_log}'
 module_dpkg_timeout_s='${var.module_dpkg_timeout_s}'
 
 minecraft_download_url='${var.minecraft_download_url}'
-minecraft_install_script='${var.minecraft_install_script}'
-
-minecraft_data_subdir='${var.minecraft_data_subdir}'
-minecraft_data_symlink='${var.minecraft_data_symlink}'
 
 minecraft_eula='${var.minecraft_eula}'
 minecraft_start_script='${var.minecraft_start_script}'
 minecraft_start_properties='${var.minecraft_start_properties}'
-
-# backup properties
-minecraft_backup_enabled='${var.minecraft_backup_enabled}'
-minecraft_backup_hours_interval_float='${var.minecraft_backup_hours_interval_float}'
-minecraft_backup_keep_int='${var.minecraft_backup_keep_int}'
-minecraft_backup_compression='${var.minecraft_backup_compression}'
-minecraft_backup_silent='${var.minecraft_backup_silent}'
-minecraft_backup_data_dir='${var.minecraft_backup_data_dir}'
 
 # java properties
 java_install_directory='${var.java_install_directory}'

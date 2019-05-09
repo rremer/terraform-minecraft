@@ -58,5 +58,5 @@ module "minecraft" {
   connection_user               = "${local.connection_user}"
   connection_private_key        = "${local.connection_private_key}"
   minecraft_property_level_type = "BIOMESOP"
-  minecraft_download_url        = "http://storage.googleapis.com/minecraft-robsremix/1.0.0/RobsRemix-1.0.0-SNAPSHOT-server.zip"
+  minecraft_download_url        = "http://storage.googleapis.com/minecraft-robsremix/2.0.0/RobsRemix-2.0.0-server.zip"
 }
