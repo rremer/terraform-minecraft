@@ -1,3 +1,7 @@
+resource "google_project_service" "compute" {
+  service = "compute.googleapis.com"
+}
+
 data "google_compute_image" "base" {
   family  = var.compute_image_family
   project = var.compute_image_project
@@ -7,12 +11,12 @@ data "google_compute_zones" "available" {
   region = var.compute_region
 }
 
-resource "google_compute_instance" "minecraft" {
+resource "google_compute_instance" "this" {
   depends_on   = [null_resource.ssh_public_key]
-  name         = var.global_app_name
+  name         = module.this.module_name
   machine_type = var.compute_instance_size
   zone         = data.google_compute_zones.available.names[0]
-  tags         = [var.global_app_name]
+  tags         = [module.this.module_name]
 
   boot_disk {
     initialize_params {
@@ -23,7 +27,7 @@ resource "google_compute_instance" "minecraft" {
   }
 
   network_interface {
-    network = "default"
+    network = google_compute_firewall.app.network
 
     access_config {
       # Ephemeral
@@ -40,7 +44,7 @@ resource "google_compute_instance" "minecraft" {
 }
 
 locals {
-  connection_host        = google_compute_instance.minecraft.network_interface[0].access_config[0].nat_ip
+  connection_host        = google_compute_instance.this.network_interface[0].access_config[0].nat_ip
   connection_user        = var.compute_image_name
   connection_private_key = file(var.connection_credentials_path)
 }
@@ -52,12 +56,11 @@ module "aptdaemon" {
   connection_private_key = local.connection_private_key
 }
 
-module "minecraft" {
-  source                        = "./minecraft"
-  connection_host               = local.connection_host
-  connection_user               = local.connection_user
-  connection_private_key        = local.connection_private_key
-  minecraft_property_level_type = "BIOMESOP"
-  minecraft_download_url        = "http://storage.googleapis.com/minecraft-robsremix/2.0.0/RobsRemix-2.0.0-server.zip"
+module "this" {
+  source                 = "./minecraft"
+  connection_host        = local.connection_host
+  connection_user        = local.connection_user
+  connection_private_key = local.connection_private_key
+  blocked_by             = module.aptdaemon.id
 }
 

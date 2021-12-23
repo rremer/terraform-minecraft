@@ -3,9 +3,9 @@
 # provisioning script for a minecraft server
 #
 
-set -e
-set -u
-set -a
+set -o allexport
+set -o errexit
+set -o nounset
 set -o pipefail
 
 # accept all script-relative paths and exit out to executor path when done
@@ -20,12 +20,11 @@ cd "$(dirname ${0})"
 test -f "${1}"
 source "${1}"
 
-scripts=(install-java.sh \
-install-minecraft.sh \
-generate-properties.sh)
+scripts=(install-container-runtime.sh \
+install-service.sh)
 
 # iterate through all the scripts
-for script in ${scripts[@]}; do
+for script in "${scripts[@]}"; do
   # assert the listed script exists and is syntactically valid
   test -f "${script}"
   bash -n "${script}"

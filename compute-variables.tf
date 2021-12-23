@@ -12,7 +12,7 @@ variable "compute_disk_size_gb" {
 
 variable "compute_disk_type" {
   type        = string
-  default     = "pd-standard"
+  default     = "pd-ssd"
   description = "The type/storage class of the root volume."
 }
 
@@ -24,7 +24,7 @@ variable "compute_image_name" {
 
 variable "compute_image_family" {
   type        = string
-  default     = "ubuntu-1804-lts"
+  default     = "ubuntu-2004-lts"
   description = "The search token for a bootable image."
 }
 
