@@ -41,6 +41,7 @@ module_install_log='${var.module_install_log}'
 
 container_image_tag='${var.container_image_tag}'
 container_persistent_data_path='${var.container_persistent_data_path}'
+container_persistent_backup_path='${var.container_persistent_backup_path}'
 
 
 PROPERTIES

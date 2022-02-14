@@ -13,5 +13,6 @@ podman run -i \
   --cap-add=sys_nice \
   --stop-timeout 120 \
   -p ${server_port}:25565 \
-  -v ${data_path}/data:${container_persistent_data_path} \
+  -v ${data_path}/world:${container_persistent_data_path} \
+  -v ${data_path}/backup:${container_persistent_backup_path} \
   ${container_image_tag}
